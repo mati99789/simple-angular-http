@@ -30,8 +30,7 @@ export class AvailablePlacesComponent implements OnInit {
       .subscribe({
         next: places => {
           this.state.data.set(places)
-        },
-        error: (error: Error) => {
+        },        error: (error: Error) => {
           this.state.error.set(error.message);
           this.state.isLoading.set(false);
         },
