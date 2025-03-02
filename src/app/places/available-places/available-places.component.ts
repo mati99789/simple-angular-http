@@ -20,10 +20,23 @@ export class AvailablePlacesComponent implements OnInit {
   private placesService = inject(PlacesService)
 
   state = new LoadingState<Place[]>();
-
+  // Track places that are being added to favorites
+  addingPlaceIds = signal<Set<string>>(new Set<string>());
+  // Track places that are already in favorites
+  favoritePlaceIds = signal<Set<string>>(new Set<string>());
 
   ngOnInit() {
-    this.state.isLoading.set(true)
+    this.state.isLoading.set(true);
+    
+    // Subscribe to user places to know which places are already in favorites
+    this.placesService.userPlaces$.pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(userPlaces => {
+      const favoriteIds = new Set(userPlaces.map(place => place.id));
+      this.favoritePlaceIds.set(favoriteIds);
+    });
+    
+    // Load available places
     this.placesService.getPlaces().pipe(
       takeUntilDestroyed(this.destroyRef),
     )
@@ -38,7 +51,7 @@ export class AvailablePlacesComponent implements OnInit {
         complete: () => {
           this.state.isLoading.set(false);
         }
-      })
+      });
   }
 
   hasPlaces(): boolean {
@@ -46,18 +59,48 @@ export class AvailablePlacesComponent implements OnInit {
   }
 
   onSelectPlace(place: Place) {
-    this.state.isLoading.set(true)
+    // Check if the place is already in favorites
+    if (this.isInFavorites(place.id)) {
+      console.log('Place already in favorites:', place.title);
+      return;
+    }
+    
+    // Add the place ID to the set of places being added
+    const updatedAddingIds = new Set(this.addingPlaceIds());
+    updatedAddingIds.add(place.id);
+    this.addingPlaceIds.set(updatedAddingIds);
+    
+    // Call the service to add the place (optimistic update already happens in the service)
     this.placesService.putPlace(place.id).pipe(
       takeUntilDestroyed(this.destroyRef),
     ).subscribe({
+      next: (updatedPlace) => {
+        console.log('Place added to favorites:', updatedPlace);
+      },
       complete: () => {
-        this.state.isLoading.set(false);
+        // Remove the place ID from the set of places being added
+        const updatedAddingIds = new Set(this.addingPlaceIds());
+        updatedAddingIds.delete(place.id);
+        this.addingPlaceIds.set(updatedAddingIds);
       },
       error: (error: Error) => {
-        this.state.isLoading.set(false);
+        // Remove the place ID from the set of places being added
+        const updatedAddingIds = new Set(this.addingPlaceIds());
+        updatedAddingIds.delete(place.id);
+        this.addingPlaceIds.set(updatedAddingIds);
+        
         this.state.error.set(error.message);
       }
     })
   }
 
+  // Helper method to check if a place is currently being added
+  isAddingPlace(placeId: string): boolean {
+    return this.addingPlaceIds().has(placeId);
+  }
+  
+  // Helper method to check if a place is already in favorites
+  isInFavorites(placeId: string): boolean {
+    return this.favoritePlaceIds().has(placeId);
+  }
 }

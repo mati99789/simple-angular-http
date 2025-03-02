@@ -1,12 +1,18 @@
 <ul>
   @for (place of places(); track place.id) {
     <li class="place-item">
-      <button (click)="onSelectPlace(place)">
+      <button (click)="onSelectPlace(place)" [disabled]="isDisabled(place.id)">
         <img
           [src]="'http://localhost:3000/' + place.image.src"
           [alt]="place.image.alt"
         />
         <h3>{{ place.title }}</h3>
+        @if (isAddingPlace(place.id)) {
+          <span class="adding-indicator">Adding...</span>
+        }
+        @if (isInFavorites(place.id)) {
+          <span class="favorite-indicator">In Favorites</span>
+        }
       </button>
     </li>
   }

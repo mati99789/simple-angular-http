@@ -59,3 +59,41 @@ ul {
   padding: 0.15rem 0.35rem;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
 }
+
+.adding-indicator {
+  display: inline-block;
+  margin-left: 0.5rem;
+  font-size: 0.8rem;
+  color: #ffffff;
+  background-color: #007bff;
+  padding: 0.2rem 0.5rem;
+  border-radius: 0.25rem;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.6;
+  }
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.favorite-indicator {
+  display: inline-block;
+  margin-left: 0.5rem;
+  font-size: 0.8rem;
+  color: #ffffff;
+  background-color: #28a745;
+  padding: 0.2rem 0.5rem;
+  border-radius: 0.25rem;
+}

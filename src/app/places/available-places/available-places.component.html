@@ -12,7 +12,12 @@
 
   <ng-template #noErrorTemplate>
     <ng-container *ngIf="hasPlaces(); else noPlacesTemplate">
-      <app-places [places]="state.data()!" (selectPlace)="onSelectPlace($event)"  ></app-places>
+      <app-places 
+        [places]="state.data()!" 
+        [addingPlaceIds]="addingPlaceIds()"
+        [favoritePlaceIds]="favoritePlaceIds()"
+        (selectPlace)="onSelectPlace($event)"
+      ></app-places>
     </ng-container>
   </ng-template>
 

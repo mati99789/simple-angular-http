@@ -22,23 +22,31 @@ export class UserPlacesComponent implements OnInit {
   private destroyRef = inject(DestroyRef)
 
   ngOnInit() {
-    this.placeService.getUserPlaces().pipe(
+    // Initial loading state
+    this.state.isLoading.set(true);
+    
+    // Subscribe to the userPlaces$ observable for real-time updates
+    this.placeService.userPlaces$.pipe(
       takeUntilDestroyed(this.destroyRef)
-    )
-      .subscribe({
-        next: places => {
-          this.state.data.set(places)
-        },
-        error: (error: Error) => {
-          this.state.error.set(error.message);
-          this.state.isLoading.set(false);
-        },
-        complete: () => {
-          this.state.isLoading.set(false);
-        }
-      })
+    ).subscribe(places => {
+      this.state.data.set(places);
+      this.state.isLoading.set(false);
+    });
+    
+    // Fetch initial user places from the server
+    this.loadUserPlaces();
   }
 
+  private loadUserPlaces() {
+    this.placeService.getUserPlaces().pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe({
+      error: (error: Error) => {
+        this.state.error.set(error.message);
+        this.state.isLoading.set(false);
+      }
+    });
+  }
 
   hasPlaces(): boolean {
     return this.state.data() !== undefined && this.state.data()!.length > 0;
