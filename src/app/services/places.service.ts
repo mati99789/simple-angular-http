@@ -1,8 +1,9 @@
-import {Injectable} from "@angular/core";
+import {inject, Injectable} from "@angular/core";
 import {HttpClient} from "@angular/common/http";
 import {BaseApiService} from "./base-api.service";
 import {Place} from "../places/place.model";
-import {BehaviorSubject, catchError, map, Observable, of, Subject, tap} from "rxjs";
+import {BehaviorSubject, catchError, map, Observable, of, Subject, tap, throwError} from "rxjs";
+import { ErrorService } from "../../shared/error.service";
 
 @Injectable({
   providedIn: 'root'
@@ -16,6 +17,9 @@ export class PlacesService extends BaseApiService {
   
   // Cache for available places
   private availablePlacesCache: Place[] = [];
+
+  private errorService = inject(ErrorService)
+
 
   getPlaces(): Observable<Place[]> {
     return this.get<{places: Place[]}>('places').pipe(
@@ -47,17 +51,20 @@ export class PlacesService extends BaseApiService {
     return this.put<{ userPlaces: Place }>('user-places', {placeId: id}).pipe(
       map((response) => response.userPlaces),
       tap(() => {
-        // If the server request succeeds, we don't need to do anything
-        // as we've already updated the UI optimistically
       }),
-      catchError(error => {
+      catchError((err) => {
         // If the server request fails, revert the optimistic update
         if (placeToAdd) {
           const currentUserPlaces = this.userPlacesSubject.value;
           const updatedUserPlaces = currentUserPlaces.filter(place => place.id !== id);
           this.userPlacesSubject.next(updatedUserPlaces);
         }
-        throw error;
+
+        this.errorService.showError('Error adding place');
+
+        return throwError(() => {
+
+          new Error('Error adding place')});
       })
     )
   }
