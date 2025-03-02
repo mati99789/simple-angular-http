@@ -27,6 +27,10 @@ export class BaseApiService {
       .pipe(catchError(this.handleError));
   }
 
+  protected put<T>(endpoint: string, data: any): Observable<T> {
+    return this.http.put<T>(`${this.baseURL}/${endpoint}`, data)
+  }
+
   private handleError(error: any) {
     console.error('API Error:', error);
     return throwError(() => new Error('An error occurred'));

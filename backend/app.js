@@ -38,7 +38,6 @@ app.get("/user-places", async (req, res) => {
 
 app.put("/user-places", async (req, res) => {
   const placeId = req.body.placeId;
-
   const fileContent = await fs.readFile("./data/places.json");
   const placesData = JSON.parse(fileContent);
 
@@ -48,6 +47,11 @@ app.put("/user-places", async (req, res) => {
   const userPlacesData = JSON.parse(userPlacesFileContent);
 
   let updatedUserPlaces = userPlacesData;
+
+
+  if(!userPlacesData) {
+    updatedUserPlaces = [place]
+  }
 
   if (!userPlacesData.some((p) => p.id === place.id)) {
     updatedUserPlaces = [...userPlacesData, place];

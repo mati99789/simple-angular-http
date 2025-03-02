@@ -13,4 +13,16 @@ export class PlacesService extends BaseApiService {
       map((response => response.places))
     )
   }
+
+  putPlace(id: string): Observable<Place> {
+    return this.put<{ userPlaces: Place }>('user-places', {placeId: id}).pipe(
+      map((response) => response.userPlaces),
+    )
+  }
+
+  getUserPlaces(): Observable<Place[]> {
+    return this.get<{places: Place[]}>('user-places').pipe(
+      map(repos => repos.places)
+    )
+  }
 }

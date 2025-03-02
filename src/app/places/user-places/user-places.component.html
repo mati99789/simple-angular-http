@@ -1,3 +1,22 @@
 <app-places-container title="Your Favorite Places">
-  <p>Todo...</p>
+
+  <ng-container *ngIf="state.isLoading(); else notLoadingTemplate">
+    <p>Fetching places please wait...</p>
+  </ng-container>
+
+  <ng-template #notLoadingTemplate>
+    <ng-container *ngIf="state.error(); else noErrorTemplate">
+      <p>{{state.error()}}</p>
+    </ng-container>
+  </ng-template>
+
+  <ng-template #noErrorTemplate>
+    <ng-container *ngIf="hasPlaces(); else noPlacesTemplate">
+      <app-places [places]="state.data()!"></app-places>
+    </ng-container>
+  </ng-template>
+
+  <ng-template #noPlacesTemplate>
+    <p class="fallback-text">Unfortunately, no places could be found.</p>
+  </ng-template>
 </app-places-container>

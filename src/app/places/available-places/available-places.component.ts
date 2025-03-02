@@ -30,7 +30,8 @@ export class AvailablePlacesComponent implements OnInit {
       .subscribe({
         next: places => {
           this.state.data.set(places)
-        },        error: (error: Error) => {
+        },
+        error: (error: Error) => {
           this.state.error.set(error.message);
           this.state.isLoading.set(false);
         },
@@ -42,6 +43,21 @@ export class AvailablePlacesComponent implements OnInit {
 
   hasPlaces(): boolean {
     return this.state.data() !== undefined && this.state.data()!.length > 0;
+  }
+
+  onSelectPlace(place: Place) {
+    this.state.isLoading.set(true)
+    this.placesService.putPlace(place.id).pipe(
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe({
+      complete: () => {
+        this.state.isLoading.set(false);
+      },
+      error: (error: Error) => {
+        this.state.isLoading.set(false);
+        this.state.error.set(error.message);
+      }
+    })
   }
 
 }
