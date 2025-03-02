@@ -21,6 +21,7 @@ export class UserPlacesComponent implements OnInit {
   private placeService = inject(PlacesService)
   private destroyRef = inject(DestroyRef)
 
+
   ngOnInit() {
     // Initial loading state
     this.state.isLoading.set(true);
@@ -51,4 +52,13 @@ export class UserPlacesComponent implements OnInit {
   hasPlaces(): boolean {
     return this.state.data() !== undefined && this.state.data()!.length > 0;
   }
+
+  onRemovePlace(place: Place) {
+    
+    this.placeService.deletePlace(place.id).subscribe(places => {
+      error: (error: Error) => {
+        this.state.error.set(error.message);
+        this.state.isLoading.set(false);
+      }
+  }) }
 }

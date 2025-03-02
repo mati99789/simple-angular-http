@@ -31,6 +31,10 @@ export class BaseApiService {
     return this.http.put<T>(`${this.baseURL}/${endpoint}`, data)
   }
 
+  protected delete<T>(endpoint: string, data?: any): Observable<T> {
+    return this.http.delete<T>(`${this.baseURL}/${endpoint}`, {params: data})
+  }
+
   private handleError(error: any) {
     console.error('API Error:', error);
     return throwError(() => new Error('An error occurred'));

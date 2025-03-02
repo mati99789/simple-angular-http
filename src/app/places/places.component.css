@@ -97,3 +97,20 @@ button:disabled {
   padding: 0.2rem 0.5rem;
   border-radius: 0.25rem;
 }
+
+.remove-button {
+  margin-top: 0.5rem;
+  padding: 0.3rem 0.6rem;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  align-self: center;
+  margin-bottom: 0.5rem;
+}
+
+.remove-button:hover {
+  background-color: #c82333;
+}
